@@ -1,5 +1,5 @@
 from App.dependencias.config import setting
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, LargeBinary
 from sqlalchemy.orm import relationship
 from sqlalchemy import ForeignKey
 from ..Schema.usuarioSchema import usuarioSchema
@@ -11,7 +11,7 @@ class Login(setting.DBBaseModel):
 
     codigo = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(100), nullable=False)
-    password = Column(String(100), nullable=False)
+    password = Column(LargeBinary, nullable=False)
     # codigoUsuario = Column(Integer, ForeignKey("usuario.codigo"))
     # itemLogin = relationship("ItemLogin", back_populates="Login")
 

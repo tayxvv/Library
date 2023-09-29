@@ -4,7 +4,7 @@ from typing import Optional
 
 class usuarioSchema(BaseModel):
     id: Optional[int] = None
-    nome: str
+    nome: Optional[str] = None
     username: str
     password: str
 

@@ -1,4 +1,10 @@
 from fastapi import APIRouter
+import jwt
+import time
+from ..Schema.requestSchema import requestSchema
+from fastapi import HTTPException
+
+SECRET_KEY = 'chaveSuperSecreta'
 
 autor_router = APIRouter(tags=["Autor"])
 
@@ -11,8 +17,26 @@ async def criarAutor(autor: dict):
     return {"message": "Autor criado com sucesso"}
 
 @autor_router.get('/autor/list', summary="Listar todos os autores")
-async def listarAutores():
-    return autores
+async def listarAutores(token: requestSchema):
+    try: 
+        payload = jwt.decode(token.token, SECRET_KEY, algorithms=["HS256"])
+        tempo_de_expiracao = payload["exp"]
+        
+        # Obtém o tempo atual
+        tempo_atual = int(time.time())
+        if tempo_atual <= tempo_de_expiracao:
+            tempo_expiracao = tempo_de_expiracao - tempo_atual
+            return {
+                "message": f"Token válido. O tempo de expiração é: {tempo_expiracao}"
+            }
+        return {
+                "message": f"{tempo_atual} - {tempo_de_expiracao}"
+            }
+    except jwt.ExpiredSignatureError:
+        return HTTPException(detail="Token expirado.", status_code=404)
+
+    except jwt.InvalidTokenError:
+        return HTTPException(detail="Token inválido.", status_code=404)
 
 @autor_router.get('/autor/get/{autor_id}', summary="Obter informações de um autor pelo ID")
 async def obterAutor(autor_id: int):
